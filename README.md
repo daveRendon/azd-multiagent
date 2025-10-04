@@ -1,4 +1,4 @@
-# Multi-Agent Support Triage on Azure AI Foundry
+# Building a Multi-Agent Support Triage System with AZD and Azure AI Foundry
 
 This repository provides a complete, end-to-end example of how to design, build, and deploy a production-ready multi-agent solution on Azure, leveraging Azure AI Foundry Agent Service and connected agents.
 

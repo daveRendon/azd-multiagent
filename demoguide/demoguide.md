@@ -1,6 +1,6 @@
-# Multi-Agent Triage Demo Guide
+# Multi-Agent Demo Guide
 
-This guide walks through a live demo that deploys the Azure AI multi-agent triage solution, boots the specialist agents, and verifies their outputs in a single run. It follows the Microsoft Learn **“Develop a multi-agent solution”** lab and uses the automation provided in this repository.
+This guide walks through a live demo that deploys the Azure AI multi-agent triage solution, boots the specialist agents, and verifies their outputs in a single run.
 
 ---
 
