@@ -1,0 +1,15 @@
+name: multi-agent-ai-foundry
+metadata:
+  template: multi-agent-ai-foundry@1.0.2
+services:
+  api:
+    project: ./src/api
+    language: python
+    host: containerapp
+    docker:
+      context: .
+      file: ./dockerfile
+      registry: ${AZURE_CONTAINER_REGISTRY_ENDPOINT}
+infra:
+  provider: bicep
+  path: ./infra
