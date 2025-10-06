@@ -190,7 +190,8 @@ Follow this checklist whenever the demo environment misbehaves. Work from top to
 2. **Validate Azure resources exist**  
   - Open the Azure portal to the `azd-multiagent` resource group.  
   - Ensure the Container App, AI Foundry account/project, and GPT-4o deployment show a `Succeeded` provisioning state.  
-  - If the AI project is missing, run `azd up` (or `azd provision`) to recreate it before bootstrapping agents.
+  - If `azd up` fails with `ResourceGroupNotFound`, recreate it with `az group create --name azd-multiagent --location westus3` before rerunning the workflow.  
+  - If the AI project (or any dependent resource) is missing after the group exists, run `azd up` (or `azd provision`) to rebuild the stack prior to bootstrapping agents.
 3. **Check network and DNS**  
   - From your shell, run `Resolve-DnsName <project-subdomain>.services.ai.azure.com`.  
   - If DNS fails, wait a few minutes or rerun `bootstrap_agents.py` (the script includes a DNS wait loop).  
