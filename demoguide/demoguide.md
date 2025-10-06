@@ -177,3 +177,33 @@ azd down
 ---
 
 By following these steps and leveraging the prepared screenshots, you can deliver a polished walkthrough of the multi-agent triage solution—from infrastructure deployment to agent orchestrations and final validation.
+
+---
+
+## Troubleshooting Runbook
+
+Follow this checklist whenever the demo environment misbehaves. Work from top to bottom and stop once the issue is resolved.
+
+1. **Confirm environment variables**  
+  - Run `azd env get-values` and verify `AIFOUNDRY_PROJECT_ENDPOINT`, `PRIORITY_AGENT_ID`, `TEAM_AGENT_ID`, `EFFORT_AGENT_ID`, and `TRIAGE_AGENT_ID` are present.  
+  - If the IDs look stale, re-run `python scripts/bootstrap_agents.py` and reload the `.azure/<env>/.env` file.
+2. **Validate Azure resources exist**  
+  - Open the Azure portal to the `azd-multiagent` resource group.  
+  - Ensure the Container App, AI Foundry account/project, and GPT-4o deployment show a `Succeeded` provisioning state.  
+  - If the AI project is missing, run `azd up` (or `azd provision`) to recreate it before bootstrapping agents.
+3. **Check network and DNS**  
+  - From your shell, run `Resolve-DnsName <project-subdomain>.services.ai.azure.com`.  
+  - If DNS fails, wait a few minutes or rerun `bootstrap_agents.py` (the script includes a DNS wait loop).  
+  - Confirm outbound connectivity if running behind a corporate proxy or VPN.
+4. **Exercise a single agent**  
+  - Execute `python scripts/verify_agent.py --agent-id $Env:PRIORITY_AGENT_ID --show-transcript`.  
+  - Review the transcript for errors such as “No assistant found” or rate-limit responses.  
+  - If you see authentication failures, ensure your Azure CLI session is logged in (`az login`) and that you have `Reader`/`Contributor` access to the subscription.
+5. **Inspect Container App logs**  
+  - Use Azure Monitor → Logs with the provided queries in the README to inspect API errors.  
+  - If the API cannot reach the agents, confirm the managed identity has `Cognitive Services User` role on the AI project.
+6. **Reset the environment**  
+  - As a last resort, run `azd down` followed by `azd up` to rebuild the stack from scratch.  
+  - After provisioning, rerun the bootstrap and test scripts to repopulate agent IDs and verify end-to-end success.
+
+Document any deviations, screenshots, or additional fixes during the demo so future runs can benefit from the learnings.
