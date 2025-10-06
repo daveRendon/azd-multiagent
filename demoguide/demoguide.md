@@ -27,6 +27,7 @@ azd up
   - Azure Container Apps environment and container app hosting the FastAPI API.
   - Azure Container Registry for the API image.
   - Azure AI Foundry project with GPT-4o deployment and project connection.
+  - On Windows, the `scripts/ensure_resource_group.py` pre-provision hook automatically recreates the `azd-multiagent` resource group if it has been deleted, preventing "ResourceGroupNotFound" validation errors on repeat runs. Non-Windows operators can run the script manually before invoking `azd up`.
 - Point out the generated `.azure/<env>/.env` file containing outputs (project endpoint, agent IDs placeholder, container app URL).
 - Mention the `azure.yaml` metadata that identifies the service and infrastructure paths.
 
@@ -119,8 +120,9 @@ python scripts/test_all_agents.py --ticket "VPN outage affecting finance team"
 
 ### Narrative
 
-- Explain that `test_all_agents.py` auto-loads `.azure/<env>/.env` (or a `--env-file` override) so no manual exports are required.
+- Explain that `test_all_agents.py` auto-loads `.azure/<env>/.env` (or a `--env-file` override) and now overrides any stale environment variables so no manual exports are required.
 - The script cycles through the priority, team, effort, and triage agents, printing each agent’s response in a consolidated summary.
+- Mention that the script logs when it overwrites existing values, which makes it clear you’re using the newest IDs and endpoints after reprovisioning or re-running `bootstrap_agents.py`.
 
 ### Screenshot Reference: `azd-multiagent-agents-responses.png`
 
@@ -186,11 +188,11 @@ Follow this checklist whenever the demo environment misbehaves. Work from top to
 
 1. **Confirm environment variables**  
   - Run `azd env get-values` and verify `AIFOUNDRY_PROJECT_ENDPOINT`, `PRIORITY_AGENT_ID`, `TEAM_AGENT_ID`, `EFFORT_AGENT_ID`, and `TRIAGE_AGENT_ID` are present.  
-  - If the IDs look stale, re-run `python scripts/bootstrap_agents.py` and reload the `.azure/<env>/.env` file. When running scripts from an existing shell, clear or overwrite any exported agent IDs so the process picks up the refreshed values (the helper only sets them if they’re unset).
+  - If the IDs look stale, re-run `python scripts/bootstrap_agents.py` and reload the `.azure/<env>/.env` file. The verification scripts now override previously exported values automatically, but it’s still good hygiene to remove manually exported overrides when debugging.
 2. **Validate Azure resources exist**  
   - Open the Azure portal to the `azd-multiagent` resource group.  
   - Ensure the Container App, AI Foundry account/project, and GPT-4o deployment show a `Succeeded` provisioning state.  
-  - If `azd up` fails with `ResourceGroupNotFound`, recreate it with `az group create --name azd-multiagent --location westus3` before rerunning the workflow.  
+  - Windows runs automatically recreate the group via `scripts/ensure_resource_group.py`; if you’re on another OS or the hook was skipped, run `az group create --name azd-multiagent --location westus3` before rerunning the workflow.  
   - If the AI project (or any dependent resource) is missing after the group exists, run `azd up` (or `azd provision`) to rebuild the stack prior to bootstrapping agents.
 3. **Check network and DNS**  
   - From your shell, run `Resolve-DnsName <project-subdomain>.services.ai.azure.com`.  

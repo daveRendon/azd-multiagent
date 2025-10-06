@@ -31,7 +31,10 @@ def _load_env_file(path: Path) -> None:
             key, value = line.split("=", 1)
             key = key.strip()
             value = _strip_quotes(value)
-            os.environ.setdefault(key, value)
+            existing = os.environ.get(key)
+            if existing and existing != value:
+                print(f"Overriding environment variable {key} (was '{existing}', now '{value}')")
+            os.environ[key] = value
 
 
 def _detect_azd_env_name() -> Optional[str]:

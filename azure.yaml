@@ -13,3 +13,8 @@ services:
 infra:
   provider: bicep
   path: ./infra
+
+hooks:
+  preprovision:
+    - run: python scripts/ensure_resource_group.py
+      shell: pwsh
