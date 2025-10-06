@@ -186,7 +186,7 @@ Follow this checklist whenever the demo environment misbehaves. Work from top to
 
 1. **Confirm environment variables**  
   - Run `azd env get-values` and verify `AIFOUNDRY_PROJECT_ENDPOINT`, `PRIORITY_AGENT_ID`, `TEAM_AGENT_ID`, `EFFORT_AGENT_ID`, and `TRIAGE_AGENT_ID` are present.  
-  - If the IDs look stale, re-run `python scripts/bootstrap_agents.py` and reload the `.azure/<env>/.env` file.
+  - If the IDs look stale, re-run `python scripts/bootstrap_agents.py` and reload the `.azure/<env>/.env` file. When running scripts from an existing shell, clear or overwrite any exported agent IDs so the process picks up the refreshed values (the helper only sets them if they’re unset).
 2. **Validate Azure resources exist**  
   - Open the Azure portal to the `azd-multiagent` resource group.  
   - Ensure the Container App, AI Foundry account/project, and GPT-4o deployment show a `Succeeded` provisioning state.  
